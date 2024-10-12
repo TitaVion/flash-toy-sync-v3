@@ -52,6 +52,9 @@ socket.onmessage = (e) => {
         return handler.id === id;
     });
 
+    if (handlerIndex === -1)
+	return;
+
     if (pendingResponseHandlers[handlerIndex].callback !== undefined) {
         pendingResponseHandlers[handlerIndex].callback(dataObject);
     }
