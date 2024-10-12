@@ -21,6 +21,12 @@ if (deviceIndexOption > -1) {
     console.log("Intiface Device Index = " + deviceIndex);
 }
 
+let vibrate = false;
+const vibrateOption = process.argv.indexOf('-v');
+
+if (vibrateOption > -1)
+    vibrate = true;
+
 // Websocket
 let socket = new W3CWebSocket("ws://localhost:12345");
 
@@ -166,23 +172,41 @@ setInterval(() => {
         let duration = nextPosition.time - currentScriptTime;
 
         let messageId = getNextMessageId();
-        let linearCmdMessage = [
-            {
-                "LinearCmd": {
-                    "Id": messageId,
-                    "DeviceIndex": deviceIndex,
-                    "Vectors": [
-                        {
-                            "Index": 0,
-                            "Duration": duration,
-                            "Position": nextPosition.position
-                        }
-                    ]
-                }
-            }
-        ]
 
-        sendSocketMessage(linearCmdMessage, messageId);
+	let cmdMessage;
+	if (vibrate === true) {
+            cmdMessage = [
+		{
+                    "VibrateCmd": {
+			"Id": messageId,
+			"DeviceIndex": deviceIndex,
+			"Speeds": [
+                            {
+				"Index": 0,
+				"Speed": 1 - nextPosition.position
+                            }
+			]
+                    }
+		}
+            ]
+	} else {
+            cmdMessage = [
+		{
+                    "LinearCmd": {
+			"Id": messageId,
+			"DeviceIndex": deviceIndex,
+			"Vectors": [
+                            {
+				"Index": 0,
+				"Duration": duration,
+				"Position": nextPosition.position
+                            }
+			]
+                    }
+		}
+            ]
+	}
+        sendSocketMessage(cmdMessage, messageId);
     }
 
     lastTimestamp = currentTimestamp;
