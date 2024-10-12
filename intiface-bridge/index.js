@@ -13,6 +13,14 @@ let playStartTime = -1;
 let playStartTimeInScript = -1;
 let playScriptTimeout = -1;
 
+let deviceIndex = 0;
+const deviceIndexOption = process.argv.indexOf('-d');
+
+if (deviceIndexOption > -1) {
+    deviceIndex = parseInt(process.argv[deviceIndexOption + 1], 10);
+    console.log("Intiface Device Index = " + deviceIndex);
+}
+
 // Websocket
 let socket = new W3CWebSocket("ws://localhost:12345");
 
@@ -162,7 +170,7 @@ setInterval(() => {
             {
                 "LinearCmd": {
                     "Id": messageId,
-                    "DeviceIndex": 0,
+                    "DeviceIndex": deviceIndex,
                     "Vectors": [
                         {
                             "Index": 0,
